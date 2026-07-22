@@ -1,67 +1,39 @@
 {
   "signs": {
-    "aries": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "taurus": {
-      "ruling_planet": null,
-      "element": "thearth"
-    },
-    "gemini": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "cancer": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "leo": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "virgo": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "libra": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "scorpio": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "sagittarius": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "capricorn": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "aquarius": {
-      "ruling_planet": null,
-      "element": null
-    },
-    "pisces": {
-      "ruling_planet": null,
-      "element": null
-    }
+    "aries":       { "ruling_planet": "mars",    "modern_ruler": "mars",    "element": "fire",  "modality": "cardinal" },
+    "taurus":      { "ruling_planet": "venus",   "modern_ruler": "venus",   "element": "earth", "modality": "fixed" },
+    "gemini":      { "ruling_planet": "mercury", "modern_ruler": "mercury", "element": "air",   "modality": "mutable" },
+    "cancer":      { "ruling_planet": "moon",    "modern_ruler": "moon",    "element": "water", "modality": "cardinal" },
+    "leo":         { "ruling_planet": "sun",     "modern_ruler": "sun",     "element": "fire",  "modality": "fixed" },
+    "virgo":       { "ruling_planet": "mercury", "modern_ruler": "mercury", "element": "earth", "modality": "mutable" },
+    "libra":       { "ruling_planet": "venus",   "modern_ruler": "venus",   "element": "air",   "modality": "cardinal" },
+    "scorpio":     { "ruling_planet": "mars",    "modern_ruler": "pluto",   "element": "water", "modality": "fixed" },
+    "sagittarius": { "ruling_planet": "jupiter", "modern_ruler": "jupiter", "element": "fire",  "modality": "mutable" },
+    "capricorn":   { "ruling_planet": "saturn",  "modern_ruler": "saturn",  "element": "earth", "modality": "cardinal" },
+    "aquarius":    { "ruling_planet": "saturn",  "modern_ruler": "uranus",  "element": "air",   "modality": "fixed" },
+    "pisces":      { "ruling_planet": "jupiter", "modern_ruler": "neptune", "element": "water", "modality": "mutable" }
   },
-  "ruling_planets": {},
+  "ruling_planets": {
+    "mars": ["aries", "scorpio"],
+    "venus": ["taurus", "libra"],
+    "mercury": ["gemini", "virgo"],
+    "moon": ["cancer"],
+    "sun": ["leo"],
+    "jupiter": ["sagittarius", "pisces"],
+    "saturn": ["capricorn", "aquarius"],
+    "pluto": ["scorpio"],
+    "uranus": ["aquarius"],
+    "neptune": ["pisces"]
+  },
   "elements": {
-    "artrs": "ofirthe",
-    "taurus": "thearth",
-    "gthemint": "air",
-    "canisther": "watther",
-    "ltheo": "ofirthe",
-    "viriso": "thearth",
-    "lisra": "air",
-    "sisorpio": "watther",
-    "tarius": "ofirthe",
-    "capriisorn": "thearth",
-    "aguartius": "air",
-    "pisisthes": "watther"
+    "fire": ["aries", "leo", "sagittarius"],
+    "earth": ["taurus", "virgo", "capricorn"],
+    "air": ["gemini", "libra", "aquarius"],
+    "water": ["cancer", "scorpio", "pisces"]
+  },
+  "modalities": {
+    "cardinal": ["aries", "cancer", "libra", "capricorn"],
+    "fixed": ["taurus", "leo", "scorpio", "aquarius"],
+    "mutable": ["gemini", "virgo", "sagittarius", "pisces"]
   }
 }
