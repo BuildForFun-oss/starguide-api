@@ -4,6 +4,8 @@ from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
 import pinecone
@@ -51,8 +53,9 @@ CRISIS_RESPONSE = (
     "If you're in immediate danger, please contact emergency services now."
 )
 
-# INTENT_MAP now correctly routes "career" to its own metadata domain
-# instead of silently falling back to "general" (previous bug).
+# Maps classify_intent() output -> Pinecone metadata "domain" field.
+# NOTE: previously "career" incorrectly mapped to "general", which meant
+# career-domain chunks were never retrieved for career questions.
 INTENT_MAP = {
     "character": "character",
     "compatibility": "romance",
@@ -69,9 +72,8 @@ INTENT_MAP = {
 
 
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> str:
-    """Actually validate the bearer token instead of just extracting it."""
+    """Actually validate the bearer token (previous version only extracted it)."""
     if not VALID_API_KEYS:
-        # Fail closed: if no keys are configured, nothing is authorized.
         raise HTTPException(status_code=500, detail="Server auth not configured")
     if credentials.credentials not in VALID_API_KEYS:
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
@@ -109,7 +111,7 @@ def query_knowledge_graph(msg: str) -> Optional[str]:
         if sign in msg_lower:
             planet = kg["signs"][sign].get("ruling_planet")
             element = kg["signs"][sign].get("element")
-            if planet and "planet" in msg_lower or "ruling" in msg_lower:
+            if planet and ("planet" in msg_lower or "ruling" in msg_lower):
                 return f"The ruling planet of {sign.capitalize()} is {planet.capitalize()}."
             if element and "element" in msg_lower:
                 return f"{sign.capitalize()} is a {element.capitalize()} sign."
@@ -140,7 +142,8 @@ def _rerank_sync(query: str, chunks: List[Dict], top_n: int = 5):
 
 
 async def hybrid_retrieve(query: str, sign=None, domain=None):
-    # Blocking embedding + rerank calls now run off the event loop.
+    # Embedding + rerank are CPU-bound and blocking; run off the event loop
+    # so one slow request doesn't stall every other concurrent user.
     qvec = await run_in_threadpool(get_embedding, query)
     initial = await run_in_threadpool(retrieve_chunks, query, qvec, sign, domain)
     return await run_in_threadpool(_rerank_sync, query, initial)
@@ -155,6 +158,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serves static/index.html (the chat UI) at the site root, so visiting the
+# Railway URL in a browser shows the chatbot interface instead of a 404.
+if os.path.isdir("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    index_path = os.path.join("static", "index.html")
+    if os.path.exists(index_path):
+        with open(index_path, "r") as f:
+            return f.read()
+    return HTMLResponse("<h1>StarGuide API</h1><p>No UI found at static/index.html.</p>", status_code=200)
 
 
 class ChatRequest(BaseModel):
