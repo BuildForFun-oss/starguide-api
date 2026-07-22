@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StarGuide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --bg:#100E24;
+    --bg-panel:#181530;
+    --bg-bubble-bot:#1F1C3E;
+    --bg-bubble-user:#2B2456;
+    --line:#332F5C;
+    --gold:#D4AF6A;
+    --gold-dim:#8C7448;
+    --lavender:#A996F0;
+    --text:#F1EDE4;
+    --text-dim:#8E89AC;
+    --danger:#E38686;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1px 1px at 20% 30%, rgba(241,237,228,0.5) 0, transparent 60%),
+      radial-gradient(1px 1px at 70% 15%, rgba(241,237,228,0.4) 0, transparent 60%),
+      radial-gradient(1px 1px at 85% 60%, rgba(241,237,228,0.35) 0, transparent 60%),
+      radial-gradient(1px 1px at 40% 80%, rgba(241,237,228,0.3) 0, transparent 60%),
+      radial-gradient(1px 1px at 10% 65%, rgba(241,237,228,0.4) 0, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+  .app{
+    width:100%;
+    max-width:640px;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    padding:20px 22px 16px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand svg{ width:26px; height:26px; }
+  .brand h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:20px;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .brand span{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--text-dim);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin-top:1px;
+  }
+  .gear-btn{
+    background:none;border:1px solid var(--line);color:var(--text-dim);
+    width:34px;height:34px;border-radius:8px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:border-color .15s, color .15s;
+  }
+  .gear-btn:hover{ border-color:var(--gold-dim); color:var(--gold); }
+
+  /* ---------- Settings drawer ---------- */
+  .drawer{
+    max-height:0;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+    transition:max-height .25s ease;
+  }
+  .drawer.open{ max-height:280px; }
+  .drawer-inner{ padding:16px 22px; display:flex; flex-direction:column; gap:12px; }
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-bottom:5px;
+  }
+  .field input, .field select{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:9px 10px;
+    border-radius:7px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+  }
+  .field input:focus, .field select:focus{ outline:none; border-color:var(--gold-dim); }
+  .drawer-row{ display:flex; gap:12px; }
+  .drawer-row .field{ flex:1; }
+  .drawer-note{ font-size:11.5px; color:var(--text-dim); line-height:1.5; }
+
+  /* ---------- Chat ---------- */
+  .thread{
+    flex:1;
+    overflow-y:auto;
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .empty{
+    margin:auto;
+    text-align:center;
+    color:var(--text-dim);
+    max-width:320px;
+  }
+  .empty h2{ font-family:'Fraunces',serif; font-style:italic; font-weight:500; color:var(--text); font-size:19px; margin-bottom:6px;}
+  .empty p{ font-size:13px; line-height:1.6; }
+
+  .row{ display:flex; gap:12px; }
+  .row.user{ flex-direction:row-reverse; }
+
+  .thread-marker{
+    width:14px;
+    display:flex; flex-direction:column; align-items:center;
+    flex-shrink:0;
+  }
+  .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--gold);
+    margin-top:8px;
+    box-shadow:0 0 6px rgba(212,175,106,0.6);
+    flex-shrink:0;
+  }
+  .row.user .dot{ background:var(--lavender); box-shadow:0 0 6px rgba(169,150,240,0.6); }
+  .thread-marker .link{
+    flex:1;
+    width:1px;
+    background:var(--line);
+    margin-top:2px;
+  }
+
+  .bubble-wrap{ max-width:80%; padding-bottom:20px; }
+  .row.user .bubble-wrap{ align-items:flex-end; }
+  .meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--text-dim);
+    margin-bottom:6px;
+    display:flex; gap:8px; align-items:center;
+  }
+  .row.user .meta{ justify-content:flex-end; }
+  .intent-tag{
+    background:rgba(212,175,106,0.12);
+    color:var(--gold);
+    border:1px solid rgba(212,175,106,0.3);
+    padding:1px 7px;
+    border-radius:20px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+  }
+  .bubble{
+    background:var(--bg-bubble-bot);
+    border:1px solid var(--line);
+    padding:12px 14px;
+    border-radius:12px;
+    font-size:14.5px;
+    line-height:1.55;
+    white-space:pre-wrap;
+  }
+  .row.user .bubble{
+    background:var(--bg-bubble-user);
+    border-color:#3B3470;
+  }
+  .bubble.error{ border-color:var(--danger); color:#F0C7C7; }
+
+  .thinking{ display:flex; gap:4px; padding:4px 0; }
+  .thinking span{
+    width:5px;height:5px;border-radius:50%;background:var(--gold-dim);
+    animation:pulse 1.2s infinite ease-in-out;
+  }
+  .thinking span:nth-child(2){ animation-delay:.2s; }
+  .thinking span:nth-child(3){ animation-delay:.4s; }
+  @keyframes pulse{ 0%,80%,100%{opacity:.25;} 40%{opacity:1;} }
+
+  /* ---------- Composer ---------- */
+  .composer{
+    border-top:1px solid var(--line);
+    padding:14px 16px;
+    display:flex;
+    gap:10px;
+    align-items:flex-end;
+    background:var(--bg);
+  }
+  textarea{
+    flex:1;
+    resize:none;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:11px 13px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    line-height:1.4;
+    max-height:120px;
+  }
+  textarea:focus{ outline:none; border-color:var(--gold-dim); }
+  .send-btn{
+    background:var(--gold);
+    color:#1A1730;
+    border:none;
+    width:42px;height:42px;
+    border-radius:10px;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    transition:opacity .15s;
+  }
+  .send-btn:disabled{ opacity:.4; cursor:default; }
+  .footer-note{
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    color:var(--text-dim);
+    letter-spacing:0.04em;
+    padding:8px 0 12px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="5" cy="18" r="1.6" fill="#D4AF6A"/>
+        <circle cx="12" cy="6" r="1.6" fill="#D4AF6A"/>
+        <circle cx="19" cy="15" r="1.6" fill="#D4AF6A"/>
+        <circle cx="14" cy="19" r="1.2" fill="#A996F0"/>
+        <path d="M5 18 L12 6 L19 15 L14 19" stroke="#4A4478" stroke-width="1"/>
+      </svg>
+      <div>
+        <h1>StarGuide</h1>
+        <span>Astrological counsel</span>
+      </div>
+    </div>
+    <button class="gear-btn" id="gearBtn" title="Settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="drawer" id="drawer">
+    <div class="drawer-inner">
+      <div class="field">
+        <label>API base URL</label>
+        <input id="apiUrl" type="text" value="https://starguide-api-production.up.railway.app">
+      </div>
+      <div class="drawer-row">
+        <div class="field">
+          <label>Bearer token</label>
+          <input id="apiToken" type="password" placeholder="one of your API_KEYS values">
+        </div>
+        <div class="field">
+          <label>Your sign</label>
+          <select id="userSign">
+            <option value="">Unspecified</option>
+            <option>Aries</option><option>Taurus</option><option>Gemini</option>
+            <option>Cancer</option><option>Leo</option><option>Virgo</option>
+            <option>Libra</option><option>Scorpio</option><option>Sagittarius</option>
+            <option>Capricorn</option><option>Aquarius</option><option>Pisces</option>
+          </select>
+        </div>
+      </div>
+      <div class="drawer-note">Settings are kept in this tab only — reloading the page clears them. The token must match one of the values in your server's <code>API_KEYS</code> env var.</div>
+    </div>
+  </div>
+
+  <div class="thread" id="thread">
+    <div class="empty" id="emptyState">
+      <h2>The sky is listening</h2>
+      <p>Ask about a sign, a compatibility question, or what's ahead — StarGuide will draw from its charts. Set your bearer token in settings first.</p>
+    </div>
+  </div>
+
+  <div class="composer">
+    <textarea id="msgInput" rows="1" placeholder="Ask StarGuide something…"></textarea>
+    <button class="send-btn" id="sendBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+      </svg>
+    </button>
+  </div>
+  <div class="footer-note">RESPONSES ARE AI-GENERATED · NOT PROFESSIONAL ADVICE</div>
+</div>
+
+<script>
+  const gearBtn = document.getElementById('gearBtn');
+  const drawer = document.getElementById('drawer');
+  const thread = document.getElementById('thread');
+  const emptyState = document.getElementById('emptyState');
+  const msgInput = document.getElementById('msgInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const apiUrlField = document.getElementById('apiUrl');
+  const apiTokenField = document.getElementById('apiToken');
+  const userSignField = document.getElementById('userSign');
+
+  let history = [];
+
+  gearBtn.addEventListener('click', () => drawer.classList.toggle('open'));
+
+  msgInput.addEventListener('input', () => {
+    msgInput.style.height = 'auto';
+    msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+  });
+  msgInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  sendBtn.addEventListener('click', send);
+
+  function addRow(role, content, meta) {
+    if (emptyState) { emptyState.remove(); }
+    const row = document.createElement('div');
+    row.className = 'row ' + role;
+
+    const marker = document.createElement('div');
+    marker.className = 'thread-marker';
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const link = document.createElement('div');
+    link.className = 'link';
+    marker.appendChild(dot);
+    marker.appendChild(link);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'bubble-wrap';
+
+    if (meta) {
+      const metaEl = document.createElement('div');
+      metaEl.className = 'meta';
+      metaEl.innerHTML = meta;
+      wrap.appendChild(metaEl);
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = content;
+    wrap.appendChild(bubble);
+
+    row.appendChild(marker);
+    row.appendChild(wrap);
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+    return bubble;
+  }
+
+  function addThinking() {
+    if (emptyState) { emptyState.remove(); }
+    const row = document.createElement('div');
+    row.className = 'row bot';
+    row.id = 'thinkingRow';
+    const marker = document.createElement('div');
+    marker.className = 'thread-marker';
+    marker.innerHTML = '<div class="dot"></div><div class="link"></div>';
+    const wrap = document.createElement('div');
+    wrap.className = 'bubble-wrap';
+    wrap.innerHTML = '<div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>';
+    row.appendChild(marker);
+    row.appendChild(wrap);
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+  }
+  function removeThinking() {
+    const el = document.getElementById('thinkingRow');
+    if (el) el.remove();
+  }
+
+  const now = () => new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+  async function send() {
+    const message = msgInput.value.trim();
+    if (!message) return;
+    const apiUrl = apiUrlField.value.trim().replace(/\/$/, '');
+    const token = apiTokenField.value.trim();
+    const sign = userSignField.value;
+
+    addRow('user', message, `<span>${now()}</span>`);
+    history.push({ role: 'user', content: message });
+    msgInput.value = '';
+    msgInput.style.height = 'auto';
+    sendBtn.disabled = true;
+    addThinking();
+
+    try {
+      const res = await fetch(apiUrl + '/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          message,
+          user_sign: sign || null,
+          history: history.slice(-6)
+        })
+      });
+
+      removeThinking();
+
+      if (!res.ok) {
+        let detail = res.status + ' ' + res.statusText;
+        try { const j = await res.json(); if (j.detail) detail = j.detail; } catch(e) {}
+        const bubble = addRow('bot', 'Couldn\'t reach the stars: ' + detail, `<span>${now()}</span>`);
+        bubble.classList.add('error');
+        return;
+      }
+
+      const data = await res.json();
+      addRow('bot', data.response || '(empty response)', `<span class="intent-tag">${data.intent || 'general'}</span><span>${now()}</span>`);
+      history.push({ role: 'assistant', content: data.response || '' });
+
+    } catch (err) {
+      removeThinking();
+      const bubble = addRow('bot', 'Network error — check the API base URL and that the server is running.', `<span>${now()}</span>`);
+      bubble.classList.add('error');
+    } finally {
+      sendBtn.disabled = false;
+      msgInput.focus();
+    }
+  }
+</script>
+</body>
+</html>
