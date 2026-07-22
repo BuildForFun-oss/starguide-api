@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pinecone-client
+sentence-transformers
+openai
+python-dotenv
+numpy

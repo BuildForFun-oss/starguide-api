@@ -1,0 +1,67 @@
+{
+  "signs": {
+    "aries": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "taurus": {
+      "ruling_planet": null,
+      "element": "thearth"
+    },
+    "gemini": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "cancer": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "leo": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "virgo": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "libra": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "scorpio": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "sagittarius": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "capricorn": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "aquarius": {
+      "ruling_planet": null,
+      "element": null
+    },
+    "pisces": {
+      "ruling_planet": null,
+      "element": null
+    }
+  },
+  "ruling_planets": {},
+  "elements": {
+    "artrs": "ofirthe",
+    "taurus": "thearth",
+    "gthemint": "air",
+    "canisther": "watther",
+    "ltheo": "ofirthe",
+    "viriso": "thearth",
+    "lisra": "air",
+    "sisorpio": "watther",
+    "tarius": "ofirthe",
+    "capriisorn": "thearth",
+    "aguartius": "air",
+    "pisisthes": "watther"
+  }
+}
