@@ -10,7 +10,9 @@ from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
 import pinecone
 from sentence_transformers import SentenceTransformer, CrossEncoder
-from openai import OpenAI
+from google import genai
+from google.genai import types
+from google.genai import errors as genai_errors
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,7 +20,8 @@ load_dotenv()
 # ===== CONFIG =====
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_INDEX_NAME = "starguide-knowledge-v2"
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 
 # Comma-separated list of valid client API keys, e.g. "key1,key2"
 VALID_API_KEYS = set(k.strip() for k in os.getenv("API_KEYS", "").split(",") if k.strip())
@@ -28,7 +31,7 @@ embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
 index = pc.Index(PINECONE_INDEX_NAME)
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+genai_client = genai.Client(api_key=GEMINI_API_KEY)
 
 with open("knowledge_graph.json", "r") as f:
     kg = json.load(f)
@@ -202,9 +205,13 @@ async def chat(request: ChatRequest, _token: str = Depends(verify_token)):
         chunks = await hybrid_retrieve(request.message, sign=request.user_sign, domain=domain)
         context = "\n\n".join([c["text"] for c in chunks])
 
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        gemini_contents = []
         if request.history:
-            messages.extend(request.history[-5:])
+            for turn in request.history[-5:]:
+                role = "model" if turn.get("role") == "assistant" else "user"
+                gemini_contents.append(
+                    types.Content(role=role, parts=[types.Part.from_text(text=turn.get("content", ""))])
+                )
 
         user_content = f"User's sign: {request.user_sign or 'unknown'}\n"
         if request.location:
@@ -213,14 +220,32 @@ async def chat(request: ChatRequest, _token: str = Depends(verify_token)):
         if chunks:
             user_content += f"Insights:\n{context}\n\n"
         user_content += f"Question: {request.message}"
-        messages.append({"role": "user", "content": user_content})
+        gemini_contents.append(types.Content(role="user", parts=[types.Part.from_text(text=user_content)]))
 
-        resp = await run_in_threadpool(
-            lambda: openai_client.chat.completions.create(
-                model="gpt-4o-mini", messages=messages, temperature=0.7, max_tokens=1000
+        try:
+            resp = await run_in_threadpool(
+                lambda: genai_client.models.generate_content(
+                    model=GEMINI_MODEL,
+                    contents=gemini_contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT,
+                        temperature=0.7,
+                        max_output_tokens=1000,
+                    ),
+                )
             )
-        )
-        answer = resp.choices[0].message.content
+        except genai_errors.ClientError as e:
+            # 429 (quota/rate limit) and similar — don't leak raw API errors to users.
+            if getattr(e, "code", None) == 429 or "RESOURCE_EXHAUSTED" in str(e):
+                return {
+                    "response": "The stars are resting right now — please try again in a moment.",
+                    "intent": intent,
+                    "sources": [],
+                    "retrieved_chunks": []
+                }
+            raise
+
+        answer = resp.text
 
         if intent in ["health", "wealth"]:
             answer += "\n\n*Disclaimer: Not professional medical/financial advice.*"
