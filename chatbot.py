@@ -177,6 +177,7 @@ async def root():
 class ChatRequest(BaseModel):
     message: str
     user_sign: Optional[str] = None
+    location: Optional[str] = None
     session_id: Optional[str] = None
     history: Optional[List[Dict]] = None
 
@@ -205,7 +206,10 @@ async def chat(request: ChatRequest, _token: str = Depends(verify_token)):
         if request.history:
             messages.extend(request.history[-5:])
 
-        user_content = f"User's sign: {request.user_sign or 'unknown'}\n\n"
+        user_content = f"User's sign: {request.user_sign or 'unknown'}\n"
+        if request.location:
+            user_content += f"User's location: {request.location}\n"
+        user_content += "\n"
         if chunks:
             user_content += f"Insights:\n{context}\n\n"
         user_content += f"Question: {request.message}"
