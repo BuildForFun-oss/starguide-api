@@ -42,6 +42,7 @@
     height:100vh;
     display:flex;
     flex-direction:column;
+    position:relative;
   }
 
   /* ---------- Header ---------- */
@@ -70,24 +71,48 @@
     text-transform:uppercase;
     margin-top:1px;
   }
-  .gear-btn{
+  .header-right{ display:flex; align-items:center; gap:8px; }
+  .sign-pill{
+    display:none;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--gold);
+    border:1px solid rgba(212,175,106,0.35);
+    background:rgba(212,175,106,0.08);
+    padding:5px 10px;
+    border-radius:20px;
+  }
+  .icon-btn{
     background:none;border:1px solid var(--line);color:var(--text-dim);
     width:34px;height:34px;border-radius:8px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
     transition:border-color .15s, color .15s;
   }
-  .gear-btn:hover{ border-color:var(--gold-dim); color:var(--gold); }
+  .icon-btn:hover{ border-color:var(--gold-dim); color:var(--gold); }
 
-  /* ---------- Settings drawer ---------- */
-  .drawer{
-    max-height:0;
-    overflow:hidden;
-    border-bottom:1px solid var(--line);
-    background:var(--bg-panel);
-    transition:max-height .25s ease;
+  /* ---------- Onboarding ---------- */
+  .onboard{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 28px;
+    text-align:center;
+    gap:22px;
   }
-  .drawer.open{ max-height:280px; }
-  .drawer-inner{ padding:16px 22px; display:flex; flex-direction:column; gap:12px; }
+  .onboard-glyph{ font-size:34px; color:var(--gold); }
+  .onboard h2{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:24px;
+    margin:0;
+  }
+  .onboard p.sub{ color:var(--text-dim); font-size:13.5px; max-width:320px; line-height:1.6; margin:0; }
+  .onboard-form{ width:100%; max-width:320px; display:flex; flex-direction:column; gap:16px; text-align:left; }
   .field label{
     display:block;
     font-family:'IBM Plex Mono',monospace;
@@ -95,22 +120,103 @@
     letter-spacing:0.08em;
     text-transform:uppercase;
     color:var(--text-dim);
-    margin-bottom:5px;
+    margin-bottom:6px;
   }
   .field input, .field select{
     width:100%;
-    background:var(--bg);
+    background:var(--bg-panel);
     border:1px solid var(--line);
     color:var(--text);
-    padding:9px 10px;
-    border-radius:7px;
+    padding:11px 12px;
+    border-radius:8px;
     font-family:'Inter',sans-serif;
-    font-size:13px;
+    font-size:14px;
   }
   .field input:focus, .field select:focus{ outline:none; border-color:var(--gold-dim); }
-  .drawer-row{ display:flex; gap:12px; }
-  .drawer-row .field{ flex:1; }
-  .drawer-note{ font-size:11.5px; color:var(--text-dim); line-height:1.5; }
+  .dob-row{ display:flex; gap:10px; }
+  .dob-row .field{ flex:1; }
+  .primary-btn{
+    background:var(--gold);
+    color:#1A1730;
+    border:none;
+    padding:13px;
+    border-radius:9px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:opacity .15s;
+  }
+  .primary-btn:hover{ opacity:.9; }
+  .ghost-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    padding:11px;
+    border-radius:9px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .form-error{ color:var(--danger); font-size:12px; display:none; }
+
+  /* ---------- Reveal ---------- */
+  .reveal-card{
+    border:1px solid var(--line);
+    background:var(--bg-panel);
+    border-radius:16px;
+    padding:28px 26px;
+    width:100%;
+    max-width:320px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .reveal-glyph{ font-size:44px; color:var(--gold); text-shadow:0 0 18px rgba(212,175,106,0.5); }
+  .reveal-sign{ font-family:'Fraunces',serif; font-size:26px; font-weight:600; }
+  .reveal-tags{ display:flex; gap:8px; margin-top:8px; }
+  .reveal-tags span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--lavender);
+    border:1px solid rgba(169,150,240,0.35);
+    background:rgba(169,150,240,0.08);
+    padding:3px 9px;
+    border-radius:20px;
+  }
+
+  .hidden{ display:none !important; }
+
+  /* ---------- Advanced settings (developer only) ---------- */
+  .adv-drawer{
+    position:absolute;
+    top:64px; right:16px;
+    width:280px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:20;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  .adv-drawer label{
+    display:block; font-family:'IBM Plex Mono',monospace; font-size:9.5px;
+    text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dim); margin-bottom:4px;
+  }
+  .adv-drawer input{
+    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    padding:7px 9px; border-radius:6px; font-size:12px; margin-bottom:8px;
+  }
+  .adv-note{ font-size:10.5px; color:var(--text-dim); line-height:1.5; }
+  .link-btn{
+    background:none; border:none; color:var(--gold-dim); font-size:12px;
+    text-decoration:underline; cursor:pointer; padding:0; text-align:left;
+  }
 
   /* ---------- Chat ---------- */
   .thread{
@@ -121,18 +227,8 @@
     flex-direction:column;
     gap:2px;
   }
-  .empty{
-    margin:auto;
-    text-align:center;
-    color:var(--text-dim);
-    max-width:320px;
-  }
-  .empty h2{ font-family:'Fraunces',serif; font-style:italic; font-weight:500; color:var(--text); font-size:19px; margin-bottom:6px;}
-  .empty p{ font-size:13px; line-height:1.6; }
-
   .row{ display:flex; gap:12px; }
   .row.user{ flex-direction:row-reverse; }
-
   .thread-marker{
     width:14px;
     display:flex; flex-direction:column; align-items:center;
@@ -146,15 +242,8 @@
     flex-shrink:0;
   }
   .row.user .dot{ background:var(--lavender); box-shadow:0 0 6px rgba(169,150,240,0.6); }
-  .thread-marker .link{
-    flex:1;
-    width:1px;
-    background:var(--line);
-    margin-top:2px;
-  }
-
+  .thread-marker .link{ flex:1; width:1px; background:var(--line); margin-top:2px; }
   .bubble-wrap{ max-width:80%; padding-bottom:20px; }
-  .row.user .bubble-wrap{ align-items:flex-end; }
   .meta{
     font-family:'IBM Plex Mono',monospace;
     font-size:10px;
@@ -181,12 +270,8 @@
     line-height:1.55;
     white-space:pre-wrap;
   }
-  .row.user .bubble{
-    background:var(--bg-bubble-user);
-    border-color:#3B3470;
-  }
+  .row.user .bubble{ background:var(--bg-bubble-user); border-color:#3B3470; }
   .bubble.error{ border-color:var(--danger); color:#F0C7C7; }
-
   .thinking{ display:flex; gap:4px; padding:4px 0; }
   .thinking span{
     width:5px;height:5px;border-radius:50%;background:var(--gold-dim);
@@ -196,7 +281,6 @@
   .thinking span:nth-child(3){ animation-delay:.4s; }
   @keyframes pulse{ 0%,80%,100%{opacity:.25;} 40%{opacity:1;} }
 
-  /* ---------- Composer ---------- */
   .composer{
     border-top:1px solid var(--line);
     padding:14px 16px;
@@ -206,8 +290,7 @@
     background:var(--bg);
   }
   textarea{
-    flex:1;
-    resize:none;
+    flex:1; resize:none;
     background:var(--bg-panel);
     border:1px solid var(--line);
     color:var(--text);
@@ -220,15 +303,10 @@
   }
   textarea:focus{ outline:none; border-color:var(--gold-dim); }
   .send-btn{
-    background:var(--gold);
-    color:#1A1730;
-    border:none;
-    width:42px;height:42px;
-    border-radius:10px;
-    cursor:pointer;
+    background:var(--gold); color:#1A1730; border:none;
+    width:42px;height:42px; border-radius:10px; cursor:pointer;
     display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    transition:opacity .15s;
+    flex-shrink:0; transition:opacity .15s;
   }
   .send-btn:disabled{ opacity:.4; cursor:default; }
   .footer-note{
@@ -242,7 +320,7 @@
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="appRoot">
 
   <header>
     <div class="brand">
@@ -258,48 +336,80 @@
         <span>Astrological counsel</span>
       </div>
     </div>
-    <button class="gear-btn" id="gearBtn" title="Settings">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-      </svg>
-    </button>
+    <div class="header-right">
+      <div class="sign-pill" id="signPill"></div>
+      <button class="icon-btn" id="gearBtn" title="Advanced settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
   </header>
 
-  <div class="drawer" id="drawer">
-    <div class="drawer-inner">
-      <div class="field">
-        <label>API base URL</label>
-        <input id="apiUrl" type="text" value="https://starguide-api-production.up.railway.app">
-      </div>
-      <div class="drawer-row">
+  <!-- Advanced (developer) settings — hidden by default, no token needed for normal use -->
+  <div class="adv-drawer hidden" id="advDrawer">
+    <div>
+      <label>API base URL</label>
+      <input id="apiUrl" type="text" value="https://starguide-api-production.up.railway.app">
+    </div>
+    <div>
+      <label>Override token (optional)</label>
+      <input id="apiTokenOverride" type="password" placeholder="leave blank to use app default">
+    </div>
+    <div class="adv-note">The app already carries its own access token for normal use. This is only for pointing at a different environment or testing a different key.</div>
+    <button class="link-btn" id="editProfileBtn">Edit birth date / location</button>
+  </div>
+
+  <!-- Step 1: onboarding -->
+  <div class="onboard" id="onboardStep">
+    <div class="onboard-glyph">✦ ⋆ ✦</div>
+    <h2>When were the stars watching?</h2>
+    <p class="sub">Tell StarGuide your birth date and where you are now, and it'll read your chart before every answer.</p>
+    <div class="onboard-form">
+      <div class="dob-row">
         <div class="field">
-          <label>Bearer token</label>
-          <input id="apiToken" type="password" placeholder="one of your API_KEYS values">
+          <label>Birth day</label>
+          <select id="birthDay"></select>
         </div>
-        <div class="field">
-          <label>Your sign</label>
-          <select id="userSign">
-            <option value="">Unspecified</option>
-            <option>Aries</option><option>Taurus</option><option>Gemini</option>
-            <option>Cancer</option><option>Leo</option><option>Virgo</option>
-            <option>Libra</option><option>Scorpio</option><option>Sagittarius</option>
-            <option>Capricorn</option><option>Aquarius</option><option>Pisces</option>
+        <div class="field" style="flex:1.4">
+          <label>Birth month</label>
+          <select id="birthMonth">
+            <option value="1">January</option><option value="2">February</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option>
+            <option value="9">September</option><option value="10">October</option>
+            <option value="11">November</option><option value="12">December</option>
           </select>
         </div>
       </div>
-      <div class="drawer-note">Settings are kept in this tab only — reloading the page clears them. The token must match one of the values in your server's <code>API_KEYS</code> env var.</div>
+      <div class="field">
+        <label>Where are you now?</label>
+        <input id="locationInput" type="text" placeholder="City, country">
+      </div>
+      <div class="form-error" id="formError">Please fill in your birth date and location.</div>
+      <button class="primary-btn" id="revealBtn">Read my chart →</button>
     </div>
   </div>
 
-  <div class="thread" id="thread">
-    <div class="empty" id="emptyState">
-      <h2>The sky is listening</h2>
-      <p>Ask about a sign, a compatibility question, or what's ahead — StarGuide will draw from its charts. Set your bearer token in settings first.</p>
+  <!-- Step 2: reveal -->
+  <div class="onboard hidden" id="revealStep">
+    <div class="reveal-card">
+      <div class="reveal-glyph" id="revealGlyph">♏</div>
+      <div class="reveal-sign" id="revealSign">Scorpio</div>
+      <div class="reveal-tags">
+        <span id="revealElement">Water</span>
+        <span id="revealModality">Fixed</span>
+      </div>
     </div>
+    <button class="primary-btn" id="startChatBtn" style="max-width:320px;width:100%;">Start chatting</button>
+    <button class="ghost-btn" id="backBtn" style="max-width:320px;width:100%;">Not quite right — edit</button>
   </div>
 
-  <div class="composer">
+  <!-- Step 3: chat -->
+  <div class="thread hidden" id="thread"></div>
+  <div class="composer hidden" id="composer">
     <textarea id="msgInput" rows="1" placeholder="Ask StarGuide something…"></textarea>
     <button class="send-btn" id="sendBtn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -307,23 +417,129 @@
       </svg>
     </button>
   </div>
-  <div class="footer-note">RESPONSES ARE AI-GENERATED · NOT PROFESSIONAL ADVICE</div>
+  <div class="footer-note hidden" id="footerNote">RESPONSES ARE AI-GENERATED · NOT PROFESSIONAL ADVICE</div>
 </div>
 
 <script>
-  const gearBtn = document.getElementById('gearBtn');
-  const drawer = document.getElementById('drawer');
+  // Set this to one of your server's API_KEYS values before deploying, so
+  // visitors never have to see or enter a token themselves.
+  const APP_TOKEN = "REPLACE_WITH_A_PUBLIC_APP_KEY";
+
+  const ZODIAC = [
+    { sign:"Capricorn", cutoffMonth:1, cutoffDay:19, glyph:"♑", element:"Earth", modality:"Cardinal" },
+    { sign:"Aquarius",  cutoffMonth:2, cutoffDay:18, glyph:"♒", element:"Air",   modality:"Fixed" },
+    { sign:"Pisces",    cutoffMonth:3, cutoffDay:20, glyph:"♓", element:"Water", modality:"Mutable" },
+    { sign:"Aries",     cutoffMonth:4, cutoffDay:19, glyph:"♈", element:"Fire",  modality:"Cardinal" },
+    { sign:"Taurus",    cutoffMonth:5, cutoffDay:20, glyph:"♉", element:"Earth", modality:"Fixed" },
+    { sign:"Gemini",    cutoffMonth:6, cutoffDay:20, glyph:"♊", element:"Air",   modality:"Mutable" },
+    { sign:"Cancer",    cutoffMonth:7, cutoffDay:22, glyph:"♋", element:"Water", modality:"Cardinal" },
+    { sign:"Leo",       cutoffMonth:8, cutoffDay:22, glyph:"♌", element:"Fire",  modality:"Fixed" },
+    { sign:"Virgo",     cutoffMonth:9, cutoffDay:22, glyph:"♍", element:"Earth", modality:"Mutable" },
+    { sign:"Libra",     cutoffMonth:10,cutoffDay:22, glyph:"♎", element:"Air",   modality:"Cardinal" },
+    { sign:"Scorpio",   cutoffMonth:11,cutoffDay:21, glyph:"♏", element:"Water", modality:"Fixed" },
+    { sign:"Sagittarius",cutoffMonth:12,cutoffDay:21,glyph:"♐", element:"Fire",  modality:"Mutable" }
+  ];
+  const GLYPH = Object.fromEntries(ZODIAC.map(z => [z.sign, z.glyph]));
+  const ELEMENT = Object.fromEntries(ZODIAC.map(z => [z.sign, z.element]));
+  const MODALITY = Object.fromEntries(ZODIAC.map(z => [z.sign, z.modality]));
+
+  function zodiacFor(day, month) {
+    const ranges = [
+      [1,19,"Capricorn"], [2,18,"Aquarius"], [3,20,"Pisces"], [4,19,"Aries"],
+      [5,20,"Taurus"], [6,20,"Gemini"], [7,22,"Cancer"], [8,22,"Leo"],
+      [9,22,"Virgo"], [10,22,"Libra"], [11,21,"Scorpio"], [12,21,"Sagittarius"]
+    ];
+    const afterMonth = { 1:"Aquarius", 2:"Pisces", 3:"Aries", 4:"Taurus", 5:"Gemini",
+      6:"Cancer", 7:"Leo", 8:"Virgo", 9:"Libra", 10:"Scorpio", 11:"Sagittarius", 12:"Capricorn" };
+    const [ , cutoffDay, onOrBefore ] = ranges.find(r => r[0] === month);
+    return day <= cutoffDay ? onOrBefore : afterMonth[month];
+  }
+
+  // ---------- Element refs ----------
+  const birthDay = document.getElementById('birthDay');
+  const birthMonth = document.getElementById('birthMonth');
+  const locationInput = document.getElementById('locationInput');
+  const revealBtn = document.getElementById('revealBtn');
+  const formError = document.getElementById('formError');
+  const onboardStep = document.getElementById('onboardStep');
+  const revealStep = document.getElementById('revealStep');
+  const backBtn = document.getElementById('backBtn');
+  const startChatBtn = document.getElementById('startChatBtn');
+  const revealGlyph = document.getElementById('revealGlyph');
+  const revealSign = document.getElementById('revealSign');
+  const revealElement = document.getElementById('revealElement');
+  const revealModality = document.getElementById('revealModality');
+  const signPill = document.getElementById('signPill');
   const thread = document.getElementById('thread');
-  const emptyState = document.getElementById('emptyState');
+  const composer = document.getElementById('composer');
+  const footerNote = document.getElementById('footerNote');
   const msgInput = document.getElementById('msgInput');
   const sendBtn = document.getElementById('sendBtn');
+  const gearBtn = document.getElementById('gearBtn');
+  const advDrawer = document.getElementById('advDrawer');
   const apiUrlField = document.getElementById('apiUrl');
-  const apiTokenField = document.getElementById('apiToken');
-  const userSignField = document.getElementById('userSign');
+  const apiTokenOverride = document.getElementById('apiTokenOverride');
+  const editProfileBtn = document.getElementById('editProfileBtn');
 
+  for (let d = 1; d <= 31; d++) {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    birthDay.appendChild(opt);
+  }
+
+  let profile = { sign: null, location: null };
   let history = [];
 
-  gearBtn.addEventListener('click', () => drawer.classList.toggle('open'));
+  gearBtn.addEventListener('click', () => advDrawer.classList.toggle('hidden'));
+  editProfileBtn.addEventListener('click', () => {
+    advDrawer.classList.add('hidden');
+    goToOnboarding();
+  });
+
+  revealBtn.addEventListener('click', () => {
+    const loc = locationInput.value.trim();
+    if (!loc) {
+      formError.style.display = 'block';
+      return;
+    }
+    formError.style.display = 'none';
+    const day = parseInt(birthDay.value, 10);
+    const month = parseInt(birthMonth.value, 10);
+    const sign = zodiacFor(day, month);
+    profile = { sign, location: loc };
+
+    revealGlyph.textContent = GLYPH[sign];
+    revealSign.textContent = sign;
+    revealElement.textContent = ELEMENT[sign];
+    revealModality.textContent = MODALITY[sign];
+
+    onboardStep.classList.add('hidden');
+    revealStep.classList.remove('hidden');
+  });
+
+  backBtn.addEventListener('click', () => goToOnboarding());
+
+  function goToOnboarding() {
+    revealStep.classList.add('hidden');
+    thread.classList.add('hidden');
+    composer.classList.add('hidden');
+    footerNote.classList.add('hidden');
+    signPill.style.display = 'none';
+    onboardStep.classList.remove('hidden');
+  }
+
+  startChatBtn.addEventListener('click', () => {
+    revealStep.classList.add('hidden');
+    thread.classList.remove('hidden');
+    composer.classList.remove('hidden');
+    footerNote.classList.remove('hidden');
+    signPill.style.display = 'flex';
+    signPill.textContent = `${GLYPH[profile.sign]} ${profile.sign}`;
+
+    thread.innerHTML = '';
+    addRow('bot', `Welcome, ${profile.sign}. Ask me anything — love, career, character, what's ahead. I already know your sky.`, `<span class="intent-tag">welcome</span>`);
+    msgInput.focus();
+  });
 
   msgInput.addEventListener('input', () => {
     msgInput.style.height = 'auto';
@@ -334,35 +550,24 @@
   });
   sendBtn.addEventListener('click', send);
 
-  function addRow(role, content, meta) {
-    if (emptyState) { emptyState.remove(); }
+  function addRow(role, content, metaHtml) {
     const row = document.createElement('div');
     row.className = 'row ' + role;
-
     const marker = document.createElement('div');
     marker.className = 'thread-marker';
-    const dot = document.createElement('div');
-    dot.className = 'dot';
-    const link = document.createElement('div');
-    link.className = 'link';
-    marker.appendChild(dot);
-    marker.appendChild(link);
-
+    marker.innerHTML = '<div class="dot"></div><div class="link"></div>';
     const wrap = document.createElement('div');
     wrap.className = 'bubble-wrap';
-
-    if (meta) {
+    if (metaHtml) {
       const metaEl = document.createElement('div');
       metaEl.className = 'meta';
-      metaEl.innerHTML = meta;
+      metaEl.innerHTML = metaHtml;
       wrap.appendChild(metaEl);
     }
-
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
     bubble.textContent = content;
     wrap.appendChild(bubble);
-
     row.appendChild(marker);
     row.appendChild(wrap);
     thread.appendChild(row);
@@ -371,18 +576,11 @@
   }
 
   function addThinking() {
-    if (emptyState) { emptyState.remove(); }
     const row = document.createElement('div');
     row.className = 'row bot';
     row.id = 'thinkingRow';
-    const marker = document.createElement('div');
-    marker.className = 'thread-marker';
-    marker.innerHTML = '<div class="dot"></div><div class="link"></div>';
-    const wrap = document.createElement('div');
-    wrap.className = 'bubble-wrap';
-    wrap.innerHTML = '<div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>';
-    row.appendChild(marker);
-    row.appendChild(wrap);
+    row.innerHTML = '<div class="thread-marker"><div class="dot"></div><div class="link"></div></div>' +
+      '<div class="bubble-wrap"><div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div></div>';
     thread.appendChild(row);
     thread.scrollTop = thread.scrollHeight;
   }
@@ -397,8 +595,7 @@
     const message = msgInput.value.trim();
     if (!message) return;
     const apiUrl = apiUrlField.value.trim().replace(/\/$/, '');
-    const token = apiTokenField.value.trim();
-    const sign = userSignField.value;
+    const token = apiTokenOverride.value.trim() || APP_TOKEN;
 
     addRow('user', message, `<span>${now()}</span>`);
     history.push({ role: 'user', content: message });
@@ -416,7 +613,8 @@
         },
         body: JSON.stringify({
           message,
-          user_sign: sign || null,
+          user_sign: profile.sign,
+          location: profile.location,
           history: history.slice(-6)
         })
       });
@@ -437,7 +635,7 @@
 
     } catch (err) {
       removeThinking();
-      const bubble = addRow('bot', 'Network error — check the API base URL and that the server is running.', `<span>${now()}</span>`);
+      const bubble = addRow('bot', 'Network error — check your connection and try again.', `<span>${now()}</span>`);
       bubble.classList.add('error');
     } finally {
       sendBtn.disabled = false;
